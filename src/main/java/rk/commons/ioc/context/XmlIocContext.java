@@ -89,7 +89,7 @@ public class XmlIocContext {
 		} catch (SAXException e) {
 			if (e instanceof SAXParseException) {
 				SAXParseException pex = (SAXParseException) e;
-
+				
 				log.error(
 						pex.getMessage() + " (" + url + ":"
 								+ pex.getLineNumber() + ":"
@@ -130,7 +130,11 @@ public class XmlIocContext {
 		Set<URL> importedURLs = new HashSet<URL>();
 		
 		for (int i = 0, n = locations.length; i < n; ++i) {
-			loadObjectDefinitions(resourceLoader.getURL(locations[i]), importedURLs);
+			URL[] docURLs = resourceLoader.getURLs(locations[i]);
+			
+			for (int j = 0; j < docURLs.length; ++j) {
+				loadObjectDefinitions(docURLs[j], importedURLs);
+			}
 		}
 
 		if (!lazy) {

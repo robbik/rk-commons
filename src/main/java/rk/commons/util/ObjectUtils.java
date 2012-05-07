@@ -264,6 +264,8 @@ public abstract class ObjectUtils {
 			return double.class;
 		} else if (Void.class.equals(type)) {
 			return void.class;
+		} else if (Boolean.class.equals(type)) {
+			return boolean.class;
 		} else {
 			return null;
 		}
