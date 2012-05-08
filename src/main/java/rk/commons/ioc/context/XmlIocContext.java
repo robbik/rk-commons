@@ -90,12 +90,12 @@ public class XmlIocContext {
 			if (e instanceof SAXParseException) {
 				SAXParseException pex = (SAXParseException) e;
 				
-				log.error(
+				throw new RuntimeException(
 						pex.getMessage() + " (" + url + ":"
 								+ pex.getLineNumber() + ":"
 								+ pex.getColumnNumber() + ")", e.getCause());
 			} else {
-				log.error(e.getMessage() + "(" + url + ")", e);
+				throw new RuntimeException(e.getMessage() + "(" + url + ")", e);
 			}
 		} catch (IOException e) {
 			log.error("unable to parse " + url, e);
