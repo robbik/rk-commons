@@ -9,8 +9,8 @@ import java.util.Set;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 
-import rk.commons.ioc.factory.ObjectNotFoundException;
-import rk.commons.ioc.factory.SingletonIocObjectFactory;
+import rk.commons.inject.factory.ObjectNotFoundException;
+import rk.commons.inject.factory.SingletonIocObjectFactory;
 import rk.commons.loader.ResourceLoader;
 
 public class SpringIocObjectFactory extends SingletonIocObjectFactory {

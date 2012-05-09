@@ -10,10 +10,10 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.UUID;
 
-import rk.commons.ioc.factory.ObjectInstantiationException;
-import rk.commons.ioc.factory.config.ObjectDefinition;
-import rk.commons.ioc.factory.support.ObjectDefinitionValueResolver;
-import rk.commons.ioc.factory.type.converter.TypeConverterResolver;
+import rk.commons.inject.factory.ObjectInstantiationException;
+import rk.commons.inject.factory.config.ObjectDefinition;
+import rk.commons.inject.factory.support.ObjectDefinitionValueResolver;
+import rk.commons.inject.factory.type.converter.TypeConverterResolver;
 
 public abstract class ObjectUtils {
 
