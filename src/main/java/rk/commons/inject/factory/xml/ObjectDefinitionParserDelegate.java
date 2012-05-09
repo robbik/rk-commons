@@ -1,7 +1,11 @@
 package rk.commons.inject.factory.xml;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import rk.commons.inject.factory.config.ObjectDefinition;
 import rk.commons.inject.factory.support.ObjectDefinitionRegistry;
@@ -75,5 +79,51 @@ public class ObjectDefinitionParserDelegate {
 		registry.registerObjectDefinition(definition);
 
 		return definition;
+	}
+	
+	public Object parseFirstChildElement(Element element) {
+		NodeList childNodes = element.getChildNodes();
+		
+		for (int i = 0, n = childNodes.getLength(); i < n; ++i) {
+			Node childNode = childNodes.item(i);
+			
+			if (childNode instanceof Element) {
+				return parse((Element) childNode);
+			}
+		}
+		
+		return null;
+	}
+	
+	public List<Object> parseChildElements(Element element) {
+		List<Object> childObjects = new ArrayList<Object>();
+		
+		NodeList childNodes = element.getChildNodes();
+		
+		for (int i = 0, n = childNodes.getLength(); i < n; ++i) {
+			Node childNode = childNodes.item(i);
+			
+			if (childNode instanceof Element) {
+				childObjects.add(parse((Element) childNode));
+			}
+		}
+		
+		return childObjects;
+	}
+
+	public List<Object> parseChildElements(Element element, String tagName) {
+		List<Object> childObjects = new ArrayList<Object>();
+		
+		NodeList childNodes = element.getElementsByTagName(tagName);
+		
+		for (int i = 0, n = childNodes.getLength(); i < n; ++i) {
+			Node childNode = childNodes.item(i);
+			
+			if (childNode instanceof Element) {
+				childObjects.add(parse((Element) childNode));
+			}
+		}
+		
+		return childObjects;
 	}
 }
