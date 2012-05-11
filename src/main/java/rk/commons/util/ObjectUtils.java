@@ -298,7 +298,7 @@ public abstract class ObjectUtils {
 		out.write(bytes);
 	}
 
-	public static void writeBytes(Object o, ObjectOutputStream out)
+	public static void writeObject(Object o, ObjectOutputStream out)
 			throws IOException {
 		if (o instanceof byte[]) {
 			out.write('b');
@@ -359,7 +359,7 @@ public abstract class ObjectUtils {
 		}
 	}
 
-	public static Object readFromBytes(ObjectInputStream in)
+	public static Object readObject(ObjectInputStream in)
 			throws IOException, ClassNotFoundException {
 
 		char h1 = (char) in.readUnsignedByte();
@@ -424,7 +424,7 @@ public abstract class ObjectUtils {
 
 		try {
 			ObjectOutputStream oos = new ObjectOutputStream(out);
-			writeBytes(o, oos);
+			writeObject(o, oos);
 
 			oos.flush();
 		} catch (Throwable t) {
@@ -443,9 +443,22 @@ public abstract class ObjectUtils {
 			ObjectInputStream ois = new ObjectInputStream(
 					new ByteArrayInputStream(bytes));
 
-			return readFromBytes(ois);
+			return readObject(ois);
 		} catch (Throwable t) {
 			return null;
 		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T> T tryCast(Object o, Class<T> type) {
+		if (o == null) {
+			return null;
+		}
+		
+		if (type.isInstance(o)) {
+			return (T) o;
+		}
+		
+		return null;
 	}
 }
