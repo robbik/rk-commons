@@ -117,7 +117,7 @@ public class XmlIocContext {
 					URL[] refURLs = resourceLoader.getURLs(element.getAttribute("url"));
 
 					for (int j = 0, m = refURLs.length; j < m; ++j) {
-						loadObjectDefinitions(refURLs[i], importedURLs);
+						loadObjectDefinitions(refURLs[j], importedURLs);
 					}
 				} else {
 					delegate.parse((Element) node);
