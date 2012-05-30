@@ -66,11 +66,13 @@ public class ObjectDefinitionParserDelegate {
 		String objectQName = definition.getObjectQName();
 		
 		if (!StringHelper.hasText(objectQName)) {
+			int counter = 1;
+			
 			while (registry.containsObjectDefinition(
-					objectQName = PropertyHelper.generateObjectQName(packageName, definition))) {
-				// do nothing
+					objectQName = PropertyHelper.generateObjectQName(packageName, definition, counter))) {
+				++counter;
 			}
-
+			
 			definition.setObjectQName(objectQName);
 		} else {
 			definition.setObjectQName(PropertyHelper.applyDefaultPackageName(packageName, objectQName));

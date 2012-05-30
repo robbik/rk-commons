@@ -1,7 +1,6 @@
 package rk.commons.inject.util;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.Map;
 
 import rk.commons.inject.factory.ObjectInstantiationException;
@@ -12,12 +11,6 @@ import rk.commons.util.ObjectHelper;
 import rk.commons.util.StringHelper;
 
 public abstract class PropertyHelper {
-	
-	private static final Map<String, Integer> counter;
-	
-	static {
-		counter = new HashMap<String, Integer>();
-	}
 
 	public static String getObjectQName(String packageName, String objectName) {
 		if (objectName == null) {
@@ -104,23 +97,13 @@ public abstract class PropertyHelper {
 		}
 	}
 
-	public static String generateObjectQName(String packageName, String objectName) {
+	public static String generateObjectQName(String packageName, String objectName, int counter) {
 		objectName = getObjectQName(packageName, objectName);
 		
-		Integer c = counter.get(objectName);
-		
-		if (c == null) {
-			c = Integer.valueOf(1);
-		} else {
-			c = Integer.valueOf(c.intValue() + 1);
-		}
-		
-		counter.put(objectName, c);
-		
-		return objectName.concat("#").concat(c.toString());
+		return objectName.concat("#").concat(String.valueOf(counter));
 	}
 
-	public static String generateObjectQName(String packageName, ObjectDefinition definition) {
+	public static String generateObjectQName(String packageName, ObjectDefinition definition, int counter) {
 		String className;
 
 		if (StringHelper.hasText(definition.getObjectClassName())) {
@@ -137,7 +120,7 @@ public abstract class PropertyHelper {
 			className = className.substring(lastDotIndex + 1);
 		}
 
-		return generateObjectQName(packageName, className);
+		return generateObjectQName(packageName, className, counter);
 	}
 	
 	public static void applyPropertyValues(String objectQName, Object object,
