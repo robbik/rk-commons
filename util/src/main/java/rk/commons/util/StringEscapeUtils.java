@@ -38,7 +38,7 @@ import java.io.Writer;
  * @since 2.0
  * @version $Id: StringEscapeUtils.java 612880 2008-01-17 17:34:43Z ggregory $
  */
-public abstract class StringEscapeUtils {
+abstract class StringEscapeUtils {
 
 	// Java
 	// --------------------------------------------------------------------------

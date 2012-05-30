@@ -1,11 +1,15 @@
 package rk.commons.util;
 
+import java.io.Closeable;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Reader;
 
-public abstract class IOUtils {
+public abstract class IOHelper {
+	
+	private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
 
 	public static void readFully(InputStream in, byte[] bbuf, int length) throws IOException {
 		readFully(in, bbuf, 0, length);
@@ -108,7 +112,7 @@ public abstract class IOUtils {
 		byte[] buf = new byte[1024];
 		int nbread;
 		
-		while ((nbread = IOUtils.readUntilEof(in, buf, 1024)) > 0) {
+		while ((nbread = IOHelper.readUntilEof(in, buf, 1024)) > 0) {
 			if (merged == null) {
 				merged = new byte[nbread];
 				System.arraycopy(buf, 0, merged, 0, nbread);
@@ -134,7 +138,7 @@ public abstract class IOUtils {
 		char[] buf = new char[1024];
 		int nbread;
 		
-		while ((nbread = IOUtils.readUntilEof(in, buf, 1024)) > 0) {
+		while ((nbread = IOHelper.readUntilEof(in, buf, 1024)) > 0) {
 			if (merged == null) {
 				merged = new char[nbread];
 				System.arraycopy(buf, 0, merged, 0, nbread);
@@ -151,5 +155,44 @@ public abstract class IOUtils {
 		}
 		
 		return merged;
+	}
+	
+	public static int copy(final InputStream input, final OutputStream output) throws IOException {
+		return copy(input, output, DEFAULT_BUFFER_SIZE);
+	}
+
+    public static int copy(final InputStream input, final OutputStream output, int bufferSize) throws IOException {
+        final byte[] buffer = new byte[bufferSize];
+        
+        int n = input.read(buffer);
+        int total = 0;
+        
+        while (n != -1) {
+            output.write(buffer, 0, n);
+            total += n;
+            
+            n = input.read(buffer);
+        }
+        
+        output.flush();
+        return total;
+    }
+	
+	public static IOException tryClose(Closeable closeable) {
+		IOException exception;
+		
+		if (closeable == null) {
+			exception = null;
+		} else {
+			try {
+				closeable.close();
+				
+				exception = null;
+			} catch (IOException e) {
+				exception = e;
+			}
+		}
+		
+		return exception;
 	}
 }

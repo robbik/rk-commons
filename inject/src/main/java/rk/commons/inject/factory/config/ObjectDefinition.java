@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import rk.commons.loader.ResourceLoader;
-import rk.commons.util.StringUtils;
+import rk.commons.util.StringHelper;
 
 public class ObjectDefinition {
 
@@ -84,7 +84,7 @@ public class ObjectDefinition {
 
 	public void resolveClass(ResourceLoader resourceLoader) {
 		if (objectClass == null) {
-			if (!StringUtils.hasText(objectClassName)) {
+			if (!StringHelper.hasText(objectClassName)) {
 				throw new IllegalArgumentException(
 						"object class name or object class must be specified for object " + objectQName);
 			}

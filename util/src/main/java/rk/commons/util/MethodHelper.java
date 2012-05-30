@@ -3,7 +3,7 @@ package rk.commons.util;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-public abstract class MethodUtils {
+public abstract class MethodHelper {
 	
 	public static int diffParameterTypes(Class<?>[] actual, Class<?>[] expected) {
 		if (actual.length != expected.length) {

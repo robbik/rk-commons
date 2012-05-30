@@ -7,10 +7,16 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Arrays;
 
-public abstract class ObjectUtils {
+public abstract class ObjectHelper {
 
 	public static boolean isArray(Object a) {
 		return a.getClass().isArray();
+	}
+	
+	public static void assertNotNull(Object a, String message) {
+		if (a == null) {
+			throw new NullPointerException(message);
+		}
 	}
 
 	public static boolean equals(byte[] a, byte[] b) {

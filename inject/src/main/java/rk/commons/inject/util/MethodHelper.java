@@ -5,7 +5,7 @@ import java.lang.reflect.Modifier;
 
 import rk.commons.inject.factory.type.converter.TypeConverterResolver;
 
-public abstract class MethodUtils extends rk.commons.util.MethodUtils {
+public abstract class MethodHelper extends rk.commons.util.MethodHelper {
 
 	public static Method findConvertablePublicMethod(Class<?> _class, String methodName,
 			TypeConverterResolver resolver, Class<?> valueType) {

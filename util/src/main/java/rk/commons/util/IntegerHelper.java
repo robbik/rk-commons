@@ -2,7 +2,8 @@ package rk.commons.util;
 
 import java.io.IOException;
 
-public abstract class IntegerUtils {
+public abstract class IntegerHelper {
+	
 	private static final int[][] digitsToInt;
 
 	private static final byte[] intToDigits;

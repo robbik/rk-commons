@@ -6,7 +6,9 @@ public class Slf4jLogger implements Logger {
 
 	private org.slf4j.Logger logger;
 
-	public Slf4jLogger(Class<?> clazz) {
+	public Slf4jLogger(Class<?> clazz) throws ClassNotFoundException {
+		Class.forName("org.slf4j.impl.StaticLoggerBinder");
+		
 		logger = LoggerFactory.getLogger(clazz);
 	}
 

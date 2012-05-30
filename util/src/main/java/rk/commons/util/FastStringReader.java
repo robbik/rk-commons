@@ -19,7 +19,7 @@ public class FastStringReader extends Reader {
 
 	public FastStringReader(String value) {
 		this.value = value;
-		this.vlen = StringUtils.hasText(value, false) ? value.length() : 0;
+		this.vlen = StringHelper.hasText(value, false) ? value.length() : 0;
 
 		this.readIndex = 0;
 		this.remaining = this.vlen;
@@ -27,7 +27,7 @@ public class FastStringReader extends Reader {
 	
 	public void reset(String value) {
 		this.value = value;
-		this.vlen = StringUtils.hasText(value, false) ? value.length() : 0;
+		this.vlen = StringHelper.hasText(value, false) ? value.length() : 0;
 
 		this.readIndex = 0;
 		this.remaining = this.vlen;

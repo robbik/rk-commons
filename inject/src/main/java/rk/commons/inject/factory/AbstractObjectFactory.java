@@ -18,9 +18,9 @@ import rk.commons.inject.factory.support.ObjectFactoryAware;
 import rk.commons.inject.factory.support.ObjectQNameAware;
 import rk.commons.inject.factory.support.ResourceLoaderAware;
 import rk.commons.inject.factory.type.converter.TypeConverterResolver;
-import rk.commons.inject.util.PropertyUtils;
+import rk.commons.inject.util.PropertyHelper;
 import rk.commons.loader.ResourceLoader;
-import rk.commons.util.StringUtils;
+import rk.commons.util.StringHelper;
 
 public abstract class AbstractObjectFactory implements ObjectFactory, ObjectDefinitionRegistry {
 	
@@ -92,12 +92,12 @@ public abstract class AbstractObjectFactory implements ObjectFactory, ObjectDefi
 	protected Object doCreateObject(ObjectDefinition definition) throws Exception {
 		String objectQName = definition.getObjectQName();
 		
-		String xobjectQName = definition.getExtends();
+		String extendedObjectQName = definition.getExtends();
 		
 		ObjectDefinition exdefinition;
 		
-		if (StringUtils.hasText(xobjectQName, true)) {
-			exdefinition = getObjectDefinition(xobjectQName);
+		if (StringHelper.hasText(extendedObjectQName, true)) {
+			exdefinition = getObjectDefinition(extendedObjectQName);
 		} else {
 			exdefinition = null;
 		}
@@ -128,7 +128,7 @@ public abstract class AbstractObjectFactory implements ObjectFactory, ObjectDefi
 		merged.putAll(definition.getPropertyValues());
 		
 		// apply property values
-		PropertyUtils.applyPropertyValues(objectQName, object, merged, valueResolver, typeConverterResolver);
+		PropertyHelper.applyPropertyValues(objectQName, object, merged, valueResolver, typeConverterResolver);
 		
 		// post construction
 		if (object instanceof ObjectQNameAware) {

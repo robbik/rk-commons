@@ -1,17 +1,23 @@
 package rk.commons.inject.util;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import rk.commons.inject.factory.ObjectInstantiationException;
 import rk.commons.inject.factory.config.ObjectDefinition;
 import rk.commons.inject.factory.support.ObjectDefinitionValueResolver;
 import rk.commons.inject.factory.type.converter.TypeConverterResolver;
-import rk.commons.util.ObjectUtils;
-import rk.commons.util.StringUtils;
+import rk.commons.util.ObjectHelper;
+import rk.commons.util.StringHelper;
 
-public abstract class PropertyUtils {
+public abstract class PropertyHelper {
+	
+	private static final Map<String, Integer> counter;
+	
+	static {
+		counter = new HashMap<String, Integer>();
+	}
 
 	public static String getObjectQName(String packageName, String objectName) {
 		if (objectName == null) {
@@ -20,7 +26,7 @@ public abstract class PropertyUtils {
 			objectName = objectName.trim();
 		}
 
-		if (StringUtils.hasText(packageName)) {
+		if (StringHelper.hasText(packageName)) {
 			return packageName.trim().concat(":").concat(objectName);
 		}
 
@@ -34,7 +40,7 @@ public abstract class PropertyUtils {
 			objectQName = objectQName.trim();
 		}
 
-		if (StringUtils.hasText(objectQName)) {
+		if (StringHelper.hasText(objectQName)) {
 			int lddi = objectQName.lastIndexOf(':');
 
 			if (lddi < 0) {
@@ -55,11 +61,11 @@ public abstract class PropertyUtils {
 			objectQName = objectQName.trim();
 		}
 
-		if (!StringUtils.hasText(packageName)) {
+		if (!StringHelper.hasText(packageName)) {
 			return objectQName;
 		}
 
-		if (StringUtils.hasText(objectQName)) {
+		if (StringHelper.hasText(objectQName)) {
 			int lddi = objectQName.lastIndexOf(':');
 
 			if (lddi < 0) {
@@ -79,13 +85,13 @@ public abstract class PropertyUtils {
 			objectQName = objectQName.trim();
 		}
 
-		if (StringUtils.hasText(packageName)) {
+		if (StringHelper.hasText(packageName)) {
 			packageName = packageName.concat(":");
 		} else {
 			packageName = "";
 		}
 
-		if (StringUtils.hasText(objectQName)) {
+		if (StringHelper.hasText(objectQName)) {
 			int lddi = objectQName.lastIndexOf(':');
 
 			if (lddi < 0) {
@@ -98,18 +104,26 @@ public abstract class PropertyUtils {
 		}
 	}
 
-	public static String generateRandomObjectQName(String packageName,
-			String objectName) {
-		return getObjectQName(packageName, objectName).concat("__").concat(
-				StringUtils.valueOf(UUID.randomUUID()));
+	public static String generateObjectQName(String packageName, String objectName) {
+		objectName = getObjectQName(packageName, objectName);
+		
+		Integer c = counter.get(objectName);
+		
+		if (c == null) {
+			c = Integer.valueOf(1);
+		} else {
+			c = Integer.valueOf(c.intValue() + 1);
+		}
+		
+		counter.put(objectName, c);
+		
+		return objectName.concat("#").concat(c.toString());
 	}
 
-	public static String generateRandomObjectQName(String packageName,
-			ObjectDefinition definition) {
-
+	public static String generateObjectQName(String packageName, ObjectDefinition definition) {
 		String className;
 
-		if (StringUtils.hasText(definition.getObjectClassName())) {
+		if (StringHelper.hasText(definition.getObjectClassName())) {
 			className = definition.getObjectClassName();
 		} else if (definition.getObjectClass() != null) {
 			className = definition.getObjectClass().getName();
@@ -123,7 +137,7 @@ public abstract class PropertyUtils {
 			className = className.substring(lastDotIndex + 1);
 		}
 
-		return generateRandomObjectQName(packageName, className);
+		return generateObjectQName(packageName, className);
 	}
 	
 	public static void applyPropertyValues(String objectQName, Object object,
@@ -173,7 +187,7 @@ public abstract class PropertyUtils {
 				String subname = name.substring(0, dot);
 				String methodName = "get" + Character.toUpperCase(subname.charAt(0)) + subname.substring(1);
 				
-				Method getter = MethodUtils.findPublicMethod(objectType, methodName);
+				Method getter = MethodHelper.findPublicMethod(objectType, methodName);
 				if (getter == null) {
 					throw new NoSuchMethodException(objectType + "." + methodName + "()");
 				}
@@ -187,10 +201,10 @@ public abstract class PropertyUtils {
 			String methodName = "set" + Character.toUpperCase(name.charAt(0)) + name.substring(1);
 			Class<?> valueType = value.getClass();
 			
-			Method setter = MethodUtils.findPublicMethod(objectType, methodName, valueType);
+			Method setter = MethodHelper.findPublicMethod(objectType, methodName, valueType);
 			
 			if ((setter == null) && (typeConverterResolver != null)) {
-				setter = MethodUtils.findConvertablePublicMethod(objectType, methodName,
+				setter = MethodHelper.findConvertablePublicMethod(objectType, methodName,
 						typeConverterResolver, valueType);
 				
 				if (setter != null) {
@@ -200,10 +214,10 @@ public abstract class PropertyUtils {
 			}
 			
 			if (setter == null) {
-				Class<?> primitive = ObjectUtils.getPrimitiveType(valueType);
+				Class<?> primitive = ObjectHelper.getPrimitiveType(valueType);
 				
 				if (primitive != null) {
-					setter = MethodUtils.findPublicMethod(objectType, methodName, primitive);
+					setter = MethodHelper.findPublicMethod(objectType, methodName, primitive);
 				}
 			}
 			

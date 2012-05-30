@@ -11,7 +11,7 @@ import rk.commons.inject.factory.type.converter.spi.StringToFloatConverter;
 import rk.commons.inject.factory.type.converter.spi.StringToIntConverter;
 import rk.commons.inject.factory.type.converter.spi.StringToLongConverter;
 import rk.commons.inject.factory.type.converter.spi.StringToUriConverter;
-import rk.commons.util.ObjectUtils;
+import rk.commons.util.ObjectHelper;
 
 public class TypeConverterResolver {
 	
@@ -69,7 +69,7 @@ public class TypeConverterResolver {
 			if (o instanceof Tupple) {
 				Tupple t = (Tupple) o;
 				
-				return ObjectUtils.equals(a, t.a) && ObjectUtils.equals(b, t.b);
+				return ObjectHelper.equals(a, t.a) && ObjectHelper.equals(b, t.b);
 			} else {
 				return false;
 			}

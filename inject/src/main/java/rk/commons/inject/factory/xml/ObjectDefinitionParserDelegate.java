@@ -9,9 +9,9 @@ import org.w3c.dom.NodeList;
 
 import rk.commons.inject.factory.config.ObjectDefinition;
 import rk.commons.inject.factory.support.ObjectDefinitionRegistry;
-import rk.commons.inject.util.PropertyUtils;
+import rk.commons.inject.util.PropertyHelper;
 import rk.commons.loader.ResourceLoader;
-import rk.commons.util.StringUtils;
+import rk.commons.util.StringHelper;
 
 public class ObjectDefinitionParserDelegate {
 
@@ -65,15 +65,15 @@ public class ObjectDefinitionParserDelegate {
 		ObjectDefinition definition = handler.parse(element, this);
 		String objectQName = definition.getObjectQName();
 		
-		if (!StringUtils.hasText(objectQName)) {
-			while (registry.containsObjectDefinition(objectQName = PropertyUtils
-					.generateRandomObjectQName(packageName, definition))) {
+		if (!StringHelper.hasText(objectQName)) {
+			while (registry.containsObjectDefinition(
+					objectQName = PropertyHelper.generateObjectQName(packageName, definition))) {
 				// do nothing
 			}
 
 			definition.setObjectQName(objectQName);
 		} else {
-			definition.setObjectQName(PropertyUtils.applyDefaultPackageName(packageName, objectQName));
+			definition.setObjectQName(PropertyHelper.applyDefaultPackageName(packageName, objectQName));
 		}
 
 		registry.registerObjectDefinition(definition);
