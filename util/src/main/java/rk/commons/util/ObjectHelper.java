@@ -98,14 +98,14 @@ public abstract class ObjectHelper {
 			out.write('b');
 			out.write(']');
 			writeBytes((byte[]) o, out);
-		} else if (o instanceof String) {
-			out.write('S');
-			out.write(' ');
-			writeBytes(((String) o).getBytes("UTF-8"), out);
 		} else if (o instanceof char[]) {
 			out.write('c');
 			out.write(']');
 			writeBytes(String.valueOf((char[]) o).getBytes("UTF-8"), out);
+		} else if (boolean.class.isInstance(o)) {
+			out.write('b');
+			out.write('o');
+			out.writeBoolean(boolean.class.cast(o));
 		} else if (byte.class.isInstance(o)) {
 			out.write('b');
 			out.write(' ');
@@ -126,6 +126,18 @@ public abstract class ObjectHelper {
 			out.write('l');
 			out.write(' ');
 			out.writeLong(long.class.cast(o));
+		} else if (float.class.isInstance(o)) {
+			out.write('f');
+			out.write(' ');
+			out.writeFloat(float.class.cast(o));
+		} else if (double.class.isInstance(o)) {
+			out.write('d');
+			out.write(' ');
+			out.writeDouble(double.class.cast(o));
+		} else if (Boolean.class.isInstance(o)) {
+			out.write('B');
+			out.write('O');
+			out.writeBoolean(Boolean.class.cast(o).booleanValue());
 		} else if (Byte.class.isInstance(o)) {
 			out.write('B');
 			out.write(' ');
@@ -146,6 +158,18 @@ public abstract class ObjectHelper {
 			out.write('L');
 			out.write(' ');
 			out.writeLong(Long.class.cast(o).longValue());
+		} else if (Float.class.isInstance(o)) {
+			out.write('F');
+			out.write(' ');
+			out.writeFloat(Float.class.cast(o).floatValue());
+		} else if (Double.class.isInstance(o)) {
+			out.write('D');
+			out.write(' ');
+			out.writeDouble(Double.class.cast(o).doubleValue());
+		} else if (String.class.isInstance(o)) {
+			out.write('T');
+			out.write(' ');
+			out.writeUTF(String.class.cast(o));
 		} else {
 			out.write('J');
 			out.write('O');
@@ -162,14 +186,13 @@ public abstract class ObjectHelper {
 		if ((h1 == 'b') && (h2 == ']')) {
 			return readBytes(in);
 		}
-
 		if ((h1 == 'c') && (h2 == ']')) {
 			return new String(readBytes(in), "UTF-8").toCharArray();
 		}
-		if ((h1 == 'S') && (h2 == ' ')) {
-			return new String(readBytes(in), "UTF-8");
-		}
 
+		if ((h1 == 'b') && (h2 == 'o')) {
+			return in.readBoolean();
+		}
 		if ((h1 == 'b') && (h2 == ' ')) {
 			return in.readByte();
 		}
@@ -185,7 +208,16 @@ public abstract class ObjectHelper {
 		if ((h1 == 'l') && (h2 == ' ')) {
 			return in.readLong();
 		}
+		if ((h1 == 'f') && (h2 == ' ')) {
+			return in.readFloat();
+		}
+		if ((h1 == 'd') && (h2 == ' ')) {
+			return in.readDouble();
+		}
 
+		if ((h1 == 'B') && (h2 == 'O')) {
+			return Boolean.valueOf(in.readBoolean());
+		}
 		if ((h1 == 'B') && (h2 == ' ')) {
 			return Byte.valueOf(in.readByte());
 		}
@@ -201,7 +233,16 @@ public abstract class ObjectHelper {
 		if ((h1 == 'L') && (h2 == ' ')) {
 			return Long.valueOf(in.readLong());
 		}
+		if ((h1 == 'F') && (h2 == ' ')) {
+			return Float.valueOf(in.readFloat());
+		}
+		if ((h1 == 'D') && (h2 == ' ')) {
+			return Double.valueOf(in.readDouble());
+		}
 
+		if ((h1 == 'T') && (h2 == ' ')) {
+			return in.readUTF();
+		}
 		if ((h1 == 'J') && (h2 == 'O')) {
 			return in.readObject();
 		}
