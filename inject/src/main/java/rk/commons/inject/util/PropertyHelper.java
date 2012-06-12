@@ -12,98 +12,38 @@ import rk.commons.util.StringHelper;
 
 public abstract class PropertyHelper {
 
-	public static String getObjectQName(String packageName, String objectName) {
-		if (objectName == null) {
-			objectName = "";
-		} else {
-			objectName = objectName.trim();
+	public static String getObjectName(String objectNamePrefix, String objectNameSuffix,
+			String objectName) {
+		
+		if (StringHelper.hasText(objectNamePrefix)) {
+			objectName = objectNamePrefix.concat(objectName);
 		}
-
-		if (StringHelper.hasText(packageName)) {
-			return packageName.trim().concat(":").concat(objectName);
+		
+		if (StringHelper.hasText(objectNameSuffix)) {
+			objectName = objectName.concat(objectNameSuffix);
 		}
-
+		
 		return objectName;
 	}
 
-	public static String getPackageName(String objectQName) {
-		if (objectQName == null) {
-			objectQName = "";
-		} else {
-			objectQName = objectQName.trim();
-		}
-
-		if (StringHelper.hasText(objectQName)) {
-			int lddi = objectQName.lastIndexOf(':');
-
-			if (lddi < 0) {
-				return "";
-			} else {
-				return objectQName.substring(0, lddi);
-			}
-		} else {
-			return "";
-		}
-	}
-
-	public static String applyDefaultPackageName(String packageName,
-			String objectQName) {
-		if (objectQName == null) {
-			objectQName = "";
-		} else {
-			objectQName = objectQName.trim();
-		}
-
-		if (!StringHelper.hasText(packageName)) {
-			return objectQName;
-		}
-
-		if (StringHelper.hasText(objectQName)) {
-			int lddi = objectQName.lastIndexOf(':');
-
-			if (lddi < 0) {
-				return packageName.concat(":").concat(objectQName);
-			} else {
-				return objectQName;
-			}
-		} else {
-			return packageName.concat(":");
-		}
-	}
-
-	public static String applyPackageName(String packageName, String objectQName) {
-		if (objectQName == null) {
-			objectQName = "";
-		} else {
-			objectQName = objectQName.trim();
-		}
-
-		if (StringHelper.hasText(packageName)) {
-			packageName = packageName.concat(":");
-		} else {
-			packageName = "";
-		}
-
-		if (StringHelper.hasText(objectQName)) {
-			int lddi = objectQName.lastIndexOf(':');
-
-			if (lddi < 0) {
-				return packageName.concat(objectQName);
-			} else {
-				return packageName.concat(objectQName.substring(lddi + 1));
-			}
-		} else {
-			return packageName;
-		}
-	}
-
-	public static String generateObjectQName(String packageName, String objectName, int counter) {
-		objectName = getObjectQName(packageName, objectName);
+	public static String generateObjectName(String objectNamePrefix, String objectNameSuffix,
+			String objectName, int counter) {
 		
-		return objectName.concat("#").concat(String.valueOf(counter));
+		if (StringHelper.hasText(objectNamePrefix)) {
+			objectName = objectNamePrefix.concat(objectName);
+		}
+		
+		objectName = objectName.concat("#").concat(String.valueOf(counter));
+		
+		if (StringHelper.hasText(objectNameSuffix)) {
+			objectName = objectName.concat(objectNameSuffix);
+		}
+		
+		return objectName;
 	}
 
-	public static String generateObjectQName(String packageName, ObjectDefinition definition, int counter) {
+	public static String generateObjectName(String objectNamePrefix, String objectNameSuffix,
+			ObjectDefinition definition, int counter) {
 		String className;
 
 		if (StringHelper.hasText(definition.getObjectClassName())) {
@@ -120,7 +60,7 @@ public abstract class PropertyHelper {
 			className = className.substring(lastDotIndex + 1);
 		}
 
-		return generateObjectQName(packageName, className, counter);
+		return generateObjectName(objectNamePrefix, objectNameSuffix, className, counter);
 	}
 	
 	public static void applyPropertyValues(String objectQName, Object object,

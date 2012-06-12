@@ -8,7 +8,7 @@ import rk.commons.util.StringHelper;
 
 public class ObjectDefinition {
 
-	protected String objectQName;
+	protected String objectName;
 
 	protected String objectClassName;
 
@@ -20,18 +20,16 @@ public class ObjectDefinition {
 
 	protected String destroyMethod;
 
-	protected String extendsObjectQName;
-
 	public ObjectDefinition() {
 		propertyValues = new HashMap<String, Object>();
 	}
 
-	public String getObjectQName() {
-		return objectQName;
+	public String getObjectName() {
+		return objectName;
 	}
 
-	public void setObjectQName(String objectQName) {
-		this.objectQName = objectQName;
+	public void setObjectName(String objectName) {
+		this.objectName = objectName;
 	}
 
 	public String getObjectClassName() {
@@ -74,26 +72,18 @@ public class ObjectDefinition {
 		this.destroyMethod = destroyMethod;
 	}
 
-	public String getExtends() {
-		return extendsObjectQName;
-	}
-
-	public void setExtends(String extendsObjectQName) {
-		this.extendsObjectQName = extendsObjectQName;
-	}
-
 	public void resolveClass(ResourceLoader resourceLoader) {
 		if (objectClass == null) {
 			if (!StringHelper.hasText(objectClassName)) {
 				throw new IllegalArgumentException(
-						"object class name or object class must be specified for object " + objectQName);
+						"object class name or object class must be specified for object " + objectName);
 			}
 
 			try {
 				objectClass = resourceLoader.loadClass(objectClassName);
 			} catch (ClassNotFoundException e) {
 				throw new IllegalArgumentException(
-						"unable to load object class name '" + objectClassName + "' for object " + objectQName);
+						"unable to load object class name '" + objectClassName + "' for object " + objectName);
 			}
 		}
 	}

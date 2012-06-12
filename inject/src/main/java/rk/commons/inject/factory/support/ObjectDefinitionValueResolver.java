@@ -28,7 +28,7 @@ public class ObjectDefinitionValueResolver {
 		} else if (value instanceof ObjectDefinition) {
 			c = resolveValueIfNecessary(beanFactory.createObject((ObjectDefinition) value));
 		} else if (value instanceof ObjectReference) {
-			c = resolveValueIfNecessary(beanFactory.getObject(((ObjectReference) value).getObjectQName()));
+			c = resolveValueIfNecessary(beanFactory.getObject(((ObjectReference) value).getObjectName()));
 		} else if (value instanceof Object[]) {
 			Object[] t = (Object[]) value;
 			

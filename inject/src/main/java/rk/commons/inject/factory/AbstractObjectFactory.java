@@ -1,26 +1,28 @@
 package rk.commons.inject.factory;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import rk.commons.inject.annotation.Destroy;
+import rk.commons.inject.annotation.Init;
+import rk.commons.inject.annotation.Inject;
 import rk.commons.inject.factory.config.ObjectDefinition;
 import rk.commons.inject.factory.support.FactoryObject;
-import rk.commons.inject.factory.support.InitializingObject;
 import rk.commons.inject.factory.support.ObjectDefinitionRegistry;
 import rk.commons.inject.factory.support.ObjectDefinitionValueResolver;
-import rk.commons.inject.factory.support.ObjectFactoryAware;
-import rk.commons.inject.factory.support.ObjectQNameAware;
-import rk.commons.inject.factory.support.ResourceLoaderAware;
 import rk.commons.inject.factory.type.converter.TypeConverterResolver;
+import rk.commons.inject.util.AnnotationHelper;
 import rk.commons.inject.util.PropertyHelper;
 import rk.commons.loader.ResourceLoader;
-import rk.commons.util.StringHelper;
 
 public abstract class AbstractObjectFactory implements ObjectFactory, ObjectDefinitionRegistry {
 	
@@ -46,13 +48,13 @@ public abstract class AbstractObjectFactory implements ObjectFactory, ObjectDefi
 		return typeConverterResolver;
 	}
 
-	public abstract boolean containsObject(String objectQName);
+	public abstract boolean containsObject(String objectName);
 
-	public Object getObject(String objectQName) {
-		Object object = doGetObject(objectQName);
+	public Object getObject(String objectName) {
+		Object object = doGetObject(objectName);
 
 		if (object == null) {
-			object = createObject(getObjectDefinition(objectQName));
+			object = createObject(getObjectDefinition(objectName));
 		}
 
 		if (object instanceof FactoryObject<?>) {
@@ -61,13 +63,23 @@ public abstract class AbstractObjectFactory implements ObjectFactory, ObjectDefi
 
 		return object;
 	}
+	
+	public <T> T getObject(String objectName, Class<T> type) {
+		Object object = getObject(objectName);
+		
+		if (type.isInstance(object)) {
+			return type.cast(object);
+		}
+		
+		throw new ObjectNotFoundException(objectName + " with type " + type);
+	}
 
 	public abstract <T> Map<String, T> getObjectsOfType(Class<T> type);
 
-	public abstract Set<String> getObjectQNames();
+	public abstract Set<String> getObjectNames();
 
 	public Object createObject(final ObjectDefinition definition) {
-		final String objectQName = definition.getObjectQName();
+		final String objectName = definition.getObjectName();
 		
 		Object object;
 		
@@ -79,28 +91,18 @@ public abstract class AbstractObjectFactory implements ObjectFactory, ObjectDefi
 				}
 			});
 		} catch (PrivilegedActionException e) {
-			throw new ObjectInstantiationException(objectQName, e.getException());
+			throw new ObjectInstantiationException(objectName, e.getException());
 		} catch (Throwable cause) {
-			throw new ObjectInstantiationException(objectQName, cause);
+			throw new ObjectInstantiationException(objectName, cause);
 		}
 		
 		return object;
 	}
 	
-	protected abstract Object doGetObject(String objectQName);
+	protected abstract Object doGetObject(String objectName);
 	
 	protected Object doCreateObject(ObjectDefinition definition) throws Exception {
-		String objectQName = definition.getObjectQName();
-		
-		String extendedObjectQName = definition.getExtends();
-		
-		ObjectDefinition exdefinition;
-		
-		if (StringHelper.hasText(extendedObjectQName, true)) {
-			exdefinition = getObjectDefinition(extendedObjectQName);
-		} else {
-			exdefinition = null;
-		}
+		String objectName = definition.getObjectName();
 		
 		// resolve object class
 		definition.resolveClass(resourceLoader);
@@ -121,43 +123,76 @@ public abstract class AbstractObjectFactory implements ObjectFactory, ObjectDefi
 		// merge property values
 		Map<String, Object> merged = new HashMap<String, Object>();
 		
-		if (exdefinition != null) {
-			merged.putAll(exdefinition.getPropertyValues());
-		}
-		
 		merged.putAll(definition.getPropertyValues());
 		
 		// apply property values
-		PropertyHelper.applyPropertyValues(objectQName, object, merged, valueResolver, typeConverterResolver);
+		PropertyHelper.applyPropertyValues(objectName, object, merged, valueResolver, typeConverterResolver);
 		
 		// post construction
-		if (object instanceof ObjectQNameAware) {
-			((ObjectQNameAware) object).setObjectQName(objectQName);
-		}
+		postCreate(objectName, object);
 		
-		if (object instanceof ObjectFactoryAware) {
-			((ObjectFactoryAware) object).setObjectFactory(this);
-		}
-		
-		if (object instanceof ResourceLoaderAware) {
-			((ResourceLoaderAware) object).setResourceLoader(resourceLoader);
-		}
-		
-		if (object instanceof InitializingObject) {
-			try {
-				((InitializingObject) object).initialize();
-			} catch (Throwable cause) {
-				throw new ObjectInstantiationException(objectQName, cause);
-			}
-		}
+		// init
+		invokeInit(objectName, object);
 		
 		return object;
+	}
+	
+	protected void postCreate(String objectName, Object object) throws Exception {
+		Class<?> type = object.getClass();
+		
+		// @Inject
+		List<Field> fields = AnnotationHelper.findAnnotatedFields(type, Inject.class);
+		for (Field f : fields) {
+			f.setAccessible(true);
+			
+			Class<?> ftype = f.getType();
+			
+			if (String.class.isAssignableFrom(ftype)) {
+				f.set(object, objectName);
+			} else if (ObjectFactory.class.isAssignableFrom(ftype)) {
+				f.set(object, this);
+			} else if (ResourceLoader.class.isAssignableFrom(ftype)) {
+				f.set(object, resourceLoader);
+			}
+		}
+	}
+	
+	protected void customFieldInject(String objectName, Object object, Field f, Class<?> type) throws Exception {
+		throw new ClassCastException("unsupported type " + type + " for field annotation injection");
+	}
+	
+	protected void invokeInit(String objectName, Object object) throws Exception {
+		// @Init
+		List<Method> methods = AnnotationHelper.findAnnotatedMethods(object.getClass(), Init.class);
+		for (Method m : methods) {
+			m.setAccessible(true);
+			
+			try {
+				m.invoke(object);
+			} catch (Throwable cause) {
+				throw new ObjectInstantiationException(objectName, cause);
+			}
+		}
+	}
+	
+	protected void invokeDestroy(Object object) {
+		// @Destroy
+		List<Method> methods = AnnotationHelper.findAnnotatedMethods(object.getClass(), Destroy.class);
+		for (Method m : methods) {
+			m.setAccessible(true);
+			
+			try {
+				m.invoke(object);
+			} catch (Throwable cause) {
+				// do nothing
+			}
+		}
 	}
 	
 	public abstract void destroy();
 	
 	public void registerObjectDefinition(ObjectDefinition definition) {
-		String objectQName = definition.getObjectQName();
+		String objectQName = definition.getObjectName();
 
 		definitions.put(objectQName, definition);
 	}

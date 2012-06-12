@@ -2,13 +2,13 @@ package rk.commons.inject.factory.config;
 
 public class ObjectReference {
 
-	private final String objectQName;
+	private final String objectName;
 
-	public ObjectReference(String objectQName) {
-		this.objectQName = objectQName;
+	public ObjectReference(String objectName) {
+		this.objectName = objectName;
 	}
 
-	public String getObjectQName() {
-		return objectQName;
+	public String getObjectName() {
+		return objectName;
 	}
 }

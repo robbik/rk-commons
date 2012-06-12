@@ -23,7 +23,9 @@ public class ObjectDefinitionParserDelegate {
 
 	private ObjectDefinitionRegistry registry;
 
-	private String packageName;
+	private String objectNamePrefix;
+
+	private String objectNameSuffix;
 	
 	public ObjectDefinitionParserDelegate(ResourceLoader resourceLoader) {
 		this.resourceLoader = resourceLoader;
@@ -41,12 +43,20 @@ public class ObjectDefinitionParserDelegate {
 		this.registry = registry;
 	}
 
-	public void setPackageName(String packageName) {
-		this.packageName = packageName;
+	public void setObjectNamePrefix(String objectNamePrefix) {
+		this.objectNamePrefix = objectNamePrefix;
 	}
 
-	public String getPackageName() {
-		return packageName;
+	public String getObjectNamePrefix() {
+		return objectNamePrefix;
+	}
+
+	public void setObjectNameSuffix(String objectNameSuffix) {
+		this.objectNameSuffix = objectNameSuffix;
+	}
+
+	public String getObjectNameSuffix() {
+		return objectNameSuffix;
 	}
 
 	public String getNamespaceURI(Node node) {
@@ -63,19 +73,22 @@ public class ObjectDefinitionParserDelegate {
 		NamespaceHandler handler = resolver.resolve(namespaceURI);
 
 		ObjectDefinition definition = handler.parse(element, this);
-		String objectQName = definition.getObjectQName();
+		String objectName = definition.getObjectName();
 		
-		if (!StringHelper.hasText(objectQName)) {
-			int counter = 1;
+		if (!StringHelper.hasText(objectName)) {
+			int counter = 0;
 			
-			while (registry.containsObjectDefinition(
-					objectQName = PropertyHelper.generateObjectQName(packageName, definition, counter))) {
+			do {
 				++counter;
-			}
+				
+				objectName = PropertyHelper.generateObjectName(objectNamePrefix, objectNameSuffix,
+						definition, counter);
+			} while (registry.containsObjectDefinition(objectName));
 			
-			definition.setObjectQName(objectQName);
+			definition.setObjectName(objectName);
 		} else {
-			definition.setObjectQName(PropertyHelper.applyDefaultPackageName(packageName, objectQName));
+			definition.setObjectName(PropertyHelper.getObjectName(objectNamePrefix, objectNameSuffix,
+					objectName));
 		}
 
 		registry.registerObjectDefinition(definition);

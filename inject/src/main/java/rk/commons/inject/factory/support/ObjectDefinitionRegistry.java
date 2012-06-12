@@ -14,5 +14,5 @@ public interface ObjectDefinitionRegistry {
 	
 	boolean containsObjectDefinition(String objectQName);
 	
-	Set<String> getObjectQNames();
+	Set<String> getObjectNames();
 }

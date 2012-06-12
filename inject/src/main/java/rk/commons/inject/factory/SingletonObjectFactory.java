@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Set;
 
 import rk.commons.inject.factory.config.ObjectDefinition;
-import rk.commons.inject.factory.support.DisposableObject;
 import rk.commons.loader.ResourceLoader;
 
 public class SingletonObjectFactory extends AbstractObjectFactory {
@@ -41,7 +40,7 @@ public class SingletonObjectFactory extends AbstractObjectFactory {
 		return objects;
 	}
 
-	public Set<String> getObjectQNames() {
+	public Set<String> getObjectNames() {
 		Set<String> set = new HashSet<String>();
 		set.addAll(singletons.keySet());
 		set.addAll(definitions.keySet());
@@ -51,7 +50,7 @@ public class SingletonObjectFactory extends AbstractObjectFactory {
 	
 	@Override
 	protected Object doCreateObject(ObjectDefinition definition) throws Exception {
-		String objectQName = definition.getObjectQName();
+		String objectQName = definition.getObjectName();
 		
 		Object object = singletons.get(objectQName);
 		
@@ -66,13 +65,7 @@ public class SingletonObjectFactory extends AbstractObjectFactory {
 	
 	public void destroy() {
 		for (Object object : singletons.values()) {
-			if (object instanceof DisposableObject) {
-				try {
-					((DisposableObject) object).destroy();
-				} catch (Throwable t) {
-					// do nothing
-				}
-			}
+			invokeDestroy(object);
 		}
 	}
 }

@@ -11,8 +11,8 @@ public class ObjectDefinitionBuilder {
 		definition = new ObjectDefinition();
 	}
 
-	public void setObjectQName(String objectQName) {
-		definition.setObjectQName(objectQName);
+	public void setObjectName(String objectName) {
+		definition.setObjectName(objectName);
 	}
 
 	public void setObjectClassName(String objectClassName) {
@@ -37,10 +37,6 @@ public class ObjectDefinitionBuilder {
 
 	public void setDestroyMethod(String destroyMethod) {
 		definition.setDestroyMethod(destroyMethod);
-	}
-
-	public void setExtends(String objectQName) {
-		definition.setExtends(objectQName);
 	}
 
 	public ObjectDefinition createObjectDefinition() {

@@ -78,7 +78,7 @@ public class XmlContext {
 		ObjectDefinitionParserDelegate delegate = new ObjectDefinitionParserDelegate(resourceLoader);
 		delegate.setObjectDefinitionRegistry(objectDefinitionRegistry);
 		delegate.setNamespaceHandlerResolver(handlerResolver);
-		delegate.setPackageName(null);
+		delegate.setObjectNamePrefix(null);
 
 		XmlObjectDefinitionReader reader = new XmlObjectDefinitionReader(url, schemaResolver);
 
@@ -138,7 +138,7 @@ public class XmlContext {
 		}
 
 		if (!lazy) {
-			Set<String> objectQNames = objectDefinitionRegistry.getObjectQNames();
+			Set<String> objectQNames = objectDefinitionRegistry.getObjectNames();
 	
 			for (String objectQName : objectQNames) {
 				ObjectDefinition def;

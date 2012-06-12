@@ -33,11 +33,11 @@ public class MapWrapper implements Map<String, Object> {
 	}
 
 	public boolean isEmpty() {
-		return factory.getObjectQNames().isEmpty();
+		return factory.getObjectNames().isEmpty();
 	}
 
 	public Set<String> keySet() {
-		return factory.getObjectQNames();
+		return factory.getObjectNames();
 	}
 
 	public Object put(String key, Object value) {
@@ -53,7 +53,7 @@ public class MapWrapper implements Map<String, Object> {
 	}
 
 	public int size() {
-		return factory.getObjectQNames().size();
+		return factory.getObjectNames().size();
 	}
 
 	public Collection<Object> values() {

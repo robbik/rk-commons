@@ -56,10 +56,10 @@ public class SpringObjectFactory extends SingletonObjectFactory {
 		return merged;
 	}
 
-	public Set<String> getObjectQNames() {
+	public Set<String> getObjectNames() {
 		Set<String> merged = new HashSet<String>();
 		
-		merged.addAll(super.getObjectQNames());
+		merged.addAll(super.getObjectNames());
 		merged.addAll(Arrays.asList(spring.getBeanDefinitionNames()));
 		
 		return merged;
