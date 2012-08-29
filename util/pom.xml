@@ -58,7 +58,8 @@
                     <instructions>
                         <Bundle-DocURL>${project.url}</Bundle-DocURL>
                         <Import-Package>
-                            org.osgi.framework;resolution:=optional
+                            org.osgi.framework;resolution:=optional,
+                            javax.servlet;resolution:=optional
                         </Import-Package>
                         <Export-Package>
                             rk.commons.util;version=${project.version},
@@ -79,6 +80,13 @@
     </build>
 
     <dependencies>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.5</version>
+            <optional>true</optional>
+        </dependency>
+        
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>

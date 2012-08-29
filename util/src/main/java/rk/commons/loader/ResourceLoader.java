@@ -42,6 +42,17 @@ public final class ResourceLoader {
 //					log.info("OSGi environment not detected");
 				}
 				
+				if (WebResourceLoaderFactory.webDetected()) {
+					ResourceLoaderProvider web = WebResourceLoaderFactory.create();
+					if (web != null) {
+						addResourceLoaderProvider(0, web);
+					}
+//	
+//					log.info("Web environment detected");
+//				} else {
+//					log.info("Web environment not detected");
+				}
+
 				initialized = true;
 			}
 		}
@@ -53,7 +64,7 @@ public final class ResourceLoader {
 					Arrays.asList(providers));
 			list.add(provider);
 
-			providers = (ResourceLoaderProvider[]) list.toArray();
+			providers = list.toArray(new ResourceLoaderProvider[0]);
 		}
 	}
 
@@ -63,7 +74,7 @@ public final class ResourceLoader {
 					Arrays.asList(providers));
 			list.add(index, provider);
 
-			providers = (ResourceLoaderProvider[]) list.toArray();
+			providers = list.toArray(new ResourceLoaderProvider[0]);
 		}
 	}
 
